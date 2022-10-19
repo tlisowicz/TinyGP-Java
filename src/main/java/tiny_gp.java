@@ -5,6 +5,11 @@
  *
  */
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.matheclipse.core.eval.ExprEvaluator;
+import org.matheclipse.core.interfaces.IExpr;
+
 import java.util.*;
 import java.io.*;
 
@@ -17,8 +22,10 @@ public class tiny_gp {
             SUB = 111,
             MUL = 112,
             DIV = 113,
+            SIN = 114,
+            COS = 115,
             FSET_START = ADD,
-            FSET_END = DIV;
+            FSET_END = COS;
     static double [] x = new double[FSET_START];
     static double minrandom, maxrandom;
     static char [] program;
@@ -54,6 +61,8 @@ public class tiny_gp {
                            else
                                return( num / den );
                        }
+            case SIN: { return Math.sin(Math.toRadians(run())); }
+            case COS: { return Math.cos(Math.toRadians(run())); }
         }
         return( 0.0 ); // should never get here
     }
@@ -63,7 +72,7 @@ public class tiny_gp {
             return( ++buffercount );
 
         return switch (buffer[buffercount]) {
-            case ADD, SUB, MUL, DIV -> (traverse(buffer, traverse(buffer, ++buffercount)));
+            case ADD, SUB, MUL, DIV, SIN, COS -> (traverse(buffer, traverse(buffer, ++buffercount)));
             default -> (0);
         };
         // should never get here
@@ -141,7 +150,7 @@ public class tiny_gp {
         else  {
             prim = (char) (rd.nextInt(FSET_END - FSET_START + 1) + FSET_START);
             switch (prim) {
-                case ADD, SUB, MUL, DIV -> {
+                case ADD, SUB, MUL, DIV, SIN, COS -> {
                     buffer[pos] = prim;
                     one_child = grow(buffer, pos + 1, max, depth - 1);
                     if (one_child < 0)
@@ -153,39 +162,54 @@ public class tiny_gp {
         return( 0 ); // should never get here
     }
 
-    int print_indiv( char []buffer, int buffercounter ) {
+    int print_indiv( char []buffer, int buffercounter, StringBuilder builder ) {
+
         int a1=0, a2;
-        if ( buffer[buffercounter] < FSET_START ) {
+        if ( buffer[buffercounter] < FSET_START )
+        {
             if ( buffer[buffercounter] < varnumber )
-                System.out.print( "X"+ (buffer[buffercounter] + 1 )+ " ");
+                builder.append("X").append(buffer[buffercounter] + 1).append(" ");
             else
-                System.out.print( x[buffer[buffercounter]]);
+                builder.append( x[buffer[buffercounter]]);
             return( ++buffercounter );
         }
         switch (buffer[buffercounter]) {
-            case ADD -> {
-                System.out.print("(");
-                a1 = print_indiv(buffer, ++buffercounter);
-                System.out.print(" + ");
-            }
-            case SUB -> {
-                System.out.print("(");
-                a1 = print_indiv(buffer, ++buffercounter);
-                System.out.print(" - ");
-            }
-            case MUL -> {
-                System.out.print("(");
-                a1 = print_indiv(buffer, ++buffercounter);
-                System.out.print(" * ");
-            }
-            case DIV -> {
-                System.out.print("(");
-                a1 = print_indiv(buffer, ++buffercounter);
-                System.out.print(" / ");
-            }
+            case ADD:
+                builder.append("(");
+                a1 = print_indiv(buffer, ++buffercounter, builder);
+                builder.append(" + ");
+                break;
+
+            case SUB:
+                builder.append("(");
+                a1 = print_indiv(buffer, ++buffercounter, builder);
+                builder.append(" - ");
+                break;
+
+            case MUL:
+                builder.append("(");
+                a1 = print_indiv(buffer, ++buffercounter, builder);
+                builder.append(" * ");
+                break;
+
+            case DIV:
+                builder.append("(");
+                a1 = print_indiv(buffer, ++buffercounter, builder);
+                builder.append(" / ");
+                break;
+
+            case SIN:
+                builder.append("sin(");
+                a1 = print_indiv(buffer, ++buffercounter, builder);
+                break;
+
+            case COS:
+                builder.append("cos(");
+                a1 = print_indiv(buffer, ++buffercounter, builder);
+                break;
         }
-        a2=print_indiv( buffer, a1 );
-        System.out.print( ")");
+        a2=print_indiv( buffer, a1, builder );
+        builder.append( ")");
         return( a2);
     }
 
@@ -237,7 +261,15 @@ public class tiny_gp {
         System.out.print("Generation="+gen+" Avg Fitness="+(-favgpop)+
                 " Best Fitness="+(-fbestpop)+" Avg Size="+avg_len+
                 "\nBest Individual: ");
-        print_indiv( pop[best], 0 );
+
+        StringBuilder builder = new StringBuilder();
+
+        Simplifier simplifier = new Simplifier();
+        print_indiv( pop[best], 0, builder );
+        System.out.println(builder);
+
+        String tmp = optimize(builder.toString());
+        System.out.println(tmp);
         System.out.print( "\n");
         System.out.flush();
     }
@@ -310,7 +342,7 @@ public class tiny_gp {
                     parentcopy[mutsite] = (char) rd.nextInt(varnumber+randomnumber);
                 else
                     switch (parentcopy[mutsite]) {
-                        case ADD, SUB, MUL, DIV -> parentcopy[mutsite] =
+                        case ADD, SUB, MUL, DIV, SIN, COS -> parentcopy[mutsite] =
                                 (char) (rd.nextInt(FSET_END - FSET_START + 1)
                                         + FSET_START);
                     }
@@ -341,6 +373,15 @@ public class tiny_gp {
         for ( int i = 0; i < FSET_START; i ++ )
             x[i]= (maxrandom-minrandom)*rd.nextDouble()+minrandom;
         pop = create_random_pop(fitness );
+    }
+
+    public String optimize(String function) {
+
+        var functionWithArg = function.replace("X1", "x").replace("X2", "y");
+        ExprEvaluator evaluator = new ExprEvaluator();
+        IExpr result = evaluator.eval(functionWithArg);
+
+        return result.toString();
     }
 
     void evolve() {
@@ -389,5 +430,6 @@ public class tiny_gp {
 
         tiny_gp gp = new tiny_gp(fname, s);
         gp.evolve();
+
     }
 };
