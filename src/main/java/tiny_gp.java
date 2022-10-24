@@ -4,9 +4,6 @@
  * Author:    Riccardo Poli (email: rpoli@essex.ac.uk)
  *
  */
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.matheclipse.core.eval.ExprEvaluator;
 import org.matheclipse.core.interfaces.IExpr;
 
@@ -35,13 +32,13 @@ public class tiny_gp {
     static long seed;
     static double avg_len;
     static final int
-        MAX_LEN = 10000,
+                MAX_LEN = 10000,
                 POPSIZE = 100000,
                 DEPTH   = 5,
                 GENERATIONS = 100,
                 TSIZE = 2;
     public static final double
-        PMUT_PER_NODE  = 0.05,
+            PMUT_PER_NODE  = 0.05,
                        CROSSOVER_PROB = 0.9;
     static double [][] targets;
 
@@ -258,21 +255,38 @@ public class tiny_gp {
         }
         avg_len = (double) node_count / POPSIZE;
         favgpop /= POPSIZE;
-        System.out.print("Generation="+gen+" Avg Fitness="+(-favgpop)+
-                " Best Fitness="+(-fbestpop)+" Avg Size="+avg_len+
-                "\nBest Individual: ");
 
+       String s ="Generation="+gen+" Avg Fitness="+(-favgpop)+
+                " Best Fitness="+(-fbestpop)+" Avg Size="+avg_len+
+                "\nBest Individual: ";
+        System.out.print(s);
+        save_to_file("results/1.txt", s);
         StringBuilder builder = new StringBuilder();
 
-        Simplifier simplifier = new Simplifier();
+        //Simplifier simplifier = new Simplifier();
         print_indiv( pop[best], 0, builder );
         System.out.println(builder);
 
         String tmp = optimize(builder.toString());
+        save_to_file("results/1.txt", builder.toString());
         System.out.println(tmp);
         System.out.print( "\n");
         System.out.flush();
     }
+    //pisane na szybko trzeba poprawić
+    void save_to_file(String path, String value){
+        try {
+            FileWriter fw = new FileWriter(path, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(value);
+            bw.newLine();
+            bw.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     int tournament(double[] fitness) {
         int best = rd.nextInt(POPSIZE), i, competitor;
