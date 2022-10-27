@@ -30,22 +30,25 @@ public class ExcelExporter {
     public void putDATColumns() throws IOException {
         Sheet sheet = sheets.get(0);
         Row row_header = sheet.createRow(0);
-        row_header.createCell(0).setCellValue("X");
-        row_header.createCell(1).setCellValue("f(X)");
+
         int lineNO = 0;
 
         try (LineIterator it = FileUtils.lineIterator(new File(DatFile), "UTF-8")) {
+            String header = it.nextLine();
+            String[] headerContent = header.split(" ");
+            int variables = Integer.parseInt(headerContent[0]);
+            for (int i = 0; i < variables; i++)
+                row_header.createCell(i).setCellValue("X" + i);
+            row_header.createCell(variables).setCellValue("f(X)");
+            lineNO++;
 
             while (it.hasNext()) {
                 String line = it.nextLine();
-                if (lineNO == 0) {
-                    lineNO++;
-                    continue;
-                }
+
                 Row row = sheet.createRow(lineNO);
                 String[] lineContent = line.split(" ");
-                row.createCell(0).setCellValue(lineContent[0]);
-                row.createCell(1).setCellValue(lineContent[1]);
+                for (int i = 0; i <= variables; i++)
+                    row.createCell(i).setCellValue(lineContent[i]);
                 lineNO++;
             }
         }

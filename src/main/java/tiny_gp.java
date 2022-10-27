@@ -448,7 +448,7 @@ public class tiny_gp {
 //        gp.evolve();
 
         //EXCEL DEMO
-        ExcelExporter excelExporter = new ExcelExporter("DatFiles/1_1.dat");
+        ExcelExporter excelExporter = new ExcelExporter("DatFiles/4_1.dat");
         excelExporter.addSheet();
         excelExporter.putDATColumns();
         excelExporter.exportToFile( "temp.xlsx");
