@@ -262,33 +262,20 @@ public class tiny_gp {
                 " Best Fitness="+(-fbestpop)+" Avg Size="+avg_len+
                 "\nBest Individual: ";
         System.out.print(s);
-        //save_to_file("results/1.txt", s);
         StringBuilder builder = new StringBuilder();
 
-        //Simplifier simplifier = new Simplifier();
         print_indiv( pop[best], 0, builder );
-        System.out.println(builder);
+        //System.out.println(builder);
 
-        String tmp = optimize(builder.toString());
-        //save_to_file("results/1.txt", builder.toString());
-        System.out.println(tmp);
+        String optimized_solution = optimize(builder.toString());
+        System.out.println(optimized_solution);
         System.out.print( "\n");
         System.out.flush();
 
-        return builder.toString();
-    }
-    //pisane na szybko trzeba poprawić
-    void save_to_file(String path, String value){
-        try {
-            FileWriter fw = new FileWriter(path, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(value);
-            bw.newLine();
-            bw.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return "=" + optimized_solution
+                            .replace('.', ',')
+                            .replace("Cos", "COS")
+                            .replace("Sin", "SIN");
     }
 
 
@@ -456,7 +443,7 @@ public class tiny_gp {
         excelExporter.addSheet();
         excelExporter.putDATColumns();
         excelExporter.putSolution(result);
-        excelExporter.exportToFile( "results.xlsx");
+        excelExporter.exportToFile( String.format("results_%s.xlsx", fname.split("/")[1]));
 
     }
 };
