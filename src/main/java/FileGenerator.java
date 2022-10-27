@@ -45,10 +45,10 @@ public class FileGenerator {
         return (float) (Math.pow(x,2)  + 3 * x * y - 7 * y + 1);
     }
     private void generate(String filename, int numOfVars, float fieldStart, float fieldEnd, int numOfFitts, Function<Float, Float> function) {
-        String path = "DatFiles\\" + filename;
+        File file = new File("DatFiles/" + filename);
 
         try {
-            var fw = new FileWriter(path, false);
+            var fw = new FileWriter(file, false);
             BufferedWriter bw = new BufferedWriter(fw);
 
             bw.write(numOfVars + " " + "100 " + fieldStart + " " + fieldEnd + " " + numOfFitts);
@@ -79,10 +79,10 @@ public class FileGenerator {
     }
 
     private void generate2vars(String filename, int numOfVars, float fieldStart, float fieldEnd, int numOfFitts, Function<Float [], Float> function) {
-        String path = "DatFiles\\" + filename;
+        File file = new File("DatFiles/" + filename);
 
         try {
-            var fw = new FileWriter(path, false);
+            var fw = new FileWriter(file, false);
             BufferedWriter bw = new BufferedWriter(fw);
 
             bw.write(numOfVars + " " + "100 " + fieldStart + " " + fieldEnd + " " + numOfFitts);
@@ -113,6 +113,10 @@ public class FileGenerator {
     }
 
     public static void main(String [] args) {
+        File directory = new File("DatFiles/");
+        if (! directory.exists()){
+            directory.mkdir();
+        }
 
         format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         FileGenerator fileGenerator = new FileGenerator();
