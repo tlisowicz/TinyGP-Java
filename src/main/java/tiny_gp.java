@@ -198,12 +198,14 @@ public class tiny_gp {
             case SIN:
                 builder.append("sin(");
                 a1 = print_indiv(buffer, ++buffercounter, builder);
-                break;
+                builder.append(")");
+                return a1;
 
             case COS:
                 builder.append("cos(");
                 a1 = print_indiv(buffer, ++buffercounter, builder);
-                break;
+                builder.append(")");
+                return a1;
         }
         a2=print_indiv( buffer, a1, builder );
         builder.append( ")");
@@ -430,20 +432,26 @@ public class tiny_gp {
         System.exit( 1 );
     }
 
-    public static void main(String[] args) {
-        String fname = "problem.dat";
-        long s = 406277;
+    public static void main(String[] args) throws IOException {
+//        String fname = "problem.dat";
+//        long s = 406277;
+//
+//        if ( args.length == 2 ) {
+//            s = Integer.parseInt(args[0]);
+//            fname = args[1];
+//        }
+//        if ( args.length == 1 ) {
+//            fname = args[0];
+//        }
+//
+//        tiny_gp gp = new tiny_gp(fname, s);
+//        gp.evolve();
 
-        if ( args.length == 2 ) {
-            s = Integer.parseInt(args[0]);
-            fname = args[1];
-        }
-        if ( args.length == 1 ) {
-            fname = args[0];
-        }
-
-        tiny_gp gp = new tiny_gp(fname, s);
-        gp.evolve();
+        //EXCEL DEMO
+        ExcelExporter excelExporter = new ExcelExporter("DatFiles/4_1.dat");
+        excelExporter.addSheet();
+        excelExporter.putDATColumns();
+        excelExporter.exportToFile( "temp.xlsx");
 
     }
 };
