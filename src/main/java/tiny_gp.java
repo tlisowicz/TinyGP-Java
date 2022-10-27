@@ -260,7 +260,7 @@ public class tiny_gp {
                 " Best Fitness="+(-fbestpop)+" Avg Size="+avg_len+
                 "\nBest Individual: ";
         System.out.print(s);
-        save_to_file("results/1.txt", s);
+        //save_to_file("results/1.txt", s);
         StringBuilder builder = new StringBuilder();
 
         //Simplifier simplifier = new Simplifier();
@@ -268,7 +268,7 @@ public class tiny_gp {
         System.out.println(builder);
 
         String tmp = optimize(builder.toString());
-        save_to_file("results/1.txt", builder.toString());
+        //save_to_file("results/1.txt", builder.toString());
         System.out.println(tmp);
         System.out.print( "\n");
         System.out.flush();
