@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Generator" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="FileGenerator" />
+    <module name="TinyGP-Java" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
