@@ -198,12 +198,14 @@ public class tiny_gp {
             case SIN:
                 builder.append("sin(");
                 a1 = print_indiv(buffer, ++buffercounter, builder);
-                break;
+                builder.append(")");
+                return a1;
 
             case COS:
                 builder.append("cos(");
                 a1 = print_indiv(buffer, ++buffercounter, builder);
-                break;
+                builder.append(")");
+                return a1;
         }
         a2=print_indiv( buffer, a1, builder );
         builder.append( ")");
@@ -444,6 +446,13 @@ public class tiny_gp {
 
         tiny_gp gp = new tiny_gp(fname, s);
         gp.evolve();
+
+        /* EXCEL DEMO
+        ExcelExporter excelExporter = new ExcelExporter("../DatFiles/1_1.dat");
+        excelExporter.addSheet();
+        excelExporter.putDATColumns();
+        excelExporter.exportToFile( "temp.xlsx");
+         */
 
     }
 };
