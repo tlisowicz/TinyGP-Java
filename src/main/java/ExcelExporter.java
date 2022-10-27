@@ -57,6 +57,9 @@ public class ExcelExporter {
         }
     }
     public void putSolution(String solution){
+        for (int i = 1; i <= variables; i++)
+            solution = solution.replace("X" + i, ((char)('A' + (i - 1))) + "2");
+
         Sheet sheet = sheets.get(0);
         Row row_header = sheet.getRow(0);
         row_header.createCell(variables + 1).setCellValue("TinyGP solution");
