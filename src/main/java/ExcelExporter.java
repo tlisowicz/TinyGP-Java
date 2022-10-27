@@ -51,7 +51,7 @@ public class ExcelExporter {
                 Row row = sheet.createRow(lineNO);
                 String[] lineContent = line.split(" ");
                 for (int i = 0; i <= variables; i++)
-                    row.createCell(i).setCellValue(lineContent[i]);
+                    row.createCell(i).setCellValue(lineContent[i].replace('.', ','));
                 lineNO++;
             }
         }
@@ -67,8 +67,14 @@ public class ExcelExporter {
     }
     public void exportToFile(String filePath) {
 
+        String rootDirectory = "ExcelOutput/";
+
         try {
-            FileOutputStream outputStream = new FileOutputStream(filePath);
+            File file = new File(rootDirectory);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            FileOutputStream outputStream = new FileOutputStream(rootDirectory+ filePath);
             workbook.write(outputStream);
             workbook.close();
 
