@@ -241,7 +241,7 @@ public class tiny_gp {
     }
 
 
-    void stats( double [] fitness, char [][] pop, int gen ) {
+    String stats( double [] fitness, char [][] pop, int gen ) {
         int i, best = rd.nextInt(POPSIZE);
         int node_count = 0;
         fbestpop = fitness[best];
@@ -274,6 +274,8 @@ public class tiny_gp {
         System.out.println(tmp);
         System.out.print( "\n");
         System.out.flush();
+
+        return builder.toString();
     }
     //pisane na szybko trzeba poprawić
     void save_to_file(String path, String value){
@@ -400,16 +402,17 @@ public class tiny_gp {
         return result.toString();
     }
 
-    void evolve() {
+    String evolve() {
         int gen = 0, indivs, offspring, parent1, parent2, parent;
         double newfit;
         char []newind;
         print_parms();
-        stats( fitness, pop, 0 );
+        String best = stats( fitness, pop, 0 );
         for ( gen = 1; gen < GENERATIONS; gen ++ ) {
             if (  fbestpop > -1e-5 ) {
                 System.out.print("PROBLEM SOLVED\n");
-                System.exit( 0 );
+                return best;
+//                System.exit( 0 );
             }
             for ( indivs = 0; indivs < POPSIZE; indivs ++ ) {
                 if ( rd.nextDouble() < CROSSOVER_PROB  ) {
@@ -429,29 +432,31 @@ public class tiny_gp {
             stats( fitness, pop, gen );
         }
         System.out.print("PROBLEM *NOT* SOLVED\n");
-        System.exit( 1 );
+        return best;
+//        System.exit( 1 );
     }
 
     public static void main(String[] args) throws IOException {
-//        String fname = "problem.dat";
-//        long s = 406277;
-//
-//        if ( args.length == 2 ) {
-//            s = Integer.parseInt(args[0]);
-//            fname = args[1];
-//        }
-//        if ( args.length == 1 ) {
-//            fname = args[0];
-//        }
-//
-//        tiny_gp gp = new tiny_gp(fname, s);
-//        gp.evolve();
+        String fname = "problem.dat";
+        long s = 406277;
+
+        if ( args.length == 2 ) {
+            s = Integer.parseInt(args[0]);
+            fname = args[1];
+        }
+        if ( args.length == 1 ) {
+            fname = args[0];
+        }
+
+        tiny_gp gp = new tiny_gp(fname, s);
+        String result = gp.evolve();
 
         //EXCEL DEMO
-        ExcelExporter excelExporter = new ExcelExporter("DatFiles/4_1.dat");
+        ExcelExporter excelExporter = new ExcelExporter(fname);
         excelExporter.addSheet();
         excelExporter.putDATColumns();
-        excelExporter.exportToFile( "temp.xlsx");
+        excelExporter.putSolution(result);
+        excelExporter.exportToFile( "results.xlsx");
 
     }
 };

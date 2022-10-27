@@ -16,6 +16,8 @@ public class ExcelExporter {
     private ArrayList<Sheet> sheets = new ArrayList<>();
     private String DatFile;
 
+    private int variables;
+
     public ExcelExporter(String DatFile) {
         this.DatFile = DatFile;
     }
@@ -36,7 +38,8 @@ public class ExcelExporter {
         try (LineIterator it = FileUtils.lineIterator(new File(DatFile), "UTF-8")) {
             String header = it.nextLine();
             String[] headerContent = header.split(" ");
-            int variables = Integer.parseInt(headerContent[0]);
+            variables = Integer.parseInt(headerContent[0]);
+
             for (int i = 0; i < variables; i++)
                 row_header.createCell(i).setCellValue("X" + i);
             row_header.createCell(variables).setCellValue("f(X)");
@@ -52,6 +55,12 @@ public class ExcelExporter {
                 lineNO++;
             }
         }
+    }
+    public void putSolution(String solution){
+        Sheet sheet = sheets.get(0);
+        Row row_header = sheet.getRow(0);
+        row_header.createCell(variables + 1).setCellValue("TinyGP solution");
+        sheet.getRow(1).createCell(variables + 1).setCellValue(solution);
     }
     public void exportToFile(String filePath) {
 
