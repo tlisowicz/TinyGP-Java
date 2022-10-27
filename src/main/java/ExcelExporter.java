@@ -56,9 +56,6 @@ public class ExcelExporter {
     public void exportToFile(String filePath) {
 
         try {
-//            File curDir = new File(".");
-//            String path = curDir.getAbsolutePath();
-//            String location = path.substring(0, path.length() - 1);
             FileOutputStream outputStream = new FileOutputStream(filePath);
             workbook.write(outputStream);
             workbook.close();
