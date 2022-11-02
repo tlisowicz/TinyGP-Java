@@ -17,7 +17,7 @@ public class FileGenerator {
 
 
     public static float f_x_2( float x) {
-        return (float) (5 * Math.pow(x, 3)  - 2  * Math.pow(x, 2) + 3 * x);
+        return (float) (5 * Math.pow(x, 3)  - 2  * Math.pow(x, 2) + 3 * x - 17);
     }
 
     public static float f_sin_cos(float x) {
@@ -44,6 +44,14 @@ public class FileGenerator {
         float y = vars[1];
         return (float) (Math.pow(x,2)  + 3 * x * y - 7 * y + 1);
     }
+
+    public static float sin_x_2(float x) {
+        return (float)Math.sin(x+3.141592/2);
+    }
+
+    public static float tan(float x) {
+        return (float)Math.tan(2*x+1);
+    }
     private void generate(String filename, int numOfVars, float fieldStart, float fieldEnd, int numOfFitts, Function<Float, Float> function) {
         File file = new File("DatFiles/" + filename);
 
@@ -57,15 +65,17 @@ public class FileGenerator {
             int n = 0;
             int d = 0;
             for (int i =0; i< numOfFitts; ++i) {
-                String x1 = d + "." + n;
-                bw.write(x1 +  " " + format.format(function.apply(Float.parseFloat(x1))));
-                bw.newLine();
-
-                ++n;
-                if (n == 10) {
+                if (n % 10 == 0 && i != 0) {
                     n = 0;
+                    String x1 = (d+1) + "." + n;
+                    bw.write(x1 +  " " + format.format(function.apply(Float.parseFloat(x1))));
+                    bw.newLine();
+                } else {
+                    String x1 = d + "." + n;
+                    bw.write(x1 +  " " + format.format(function.apply(Float.parseFloat(x1))));
+                    bw.newLine();
                 }
-
+                ++n;
                 if (i % 10 == 0 && i != 0) {
                     ++d;
                 }
@@ -91,15 +101,20 @@ public class FileGenerator {
             int n = 0;
             int d = 0;
             for (int i =0; i< numOfFitts; ++i) {
-                String x1 = d + "." + n;
-                String x2 = n + "." + d;
-                bw.write(x1 +  " "+ x2 + " " + format.format(function.apply(new Float[] {Float.parseFloat(x1), Float.parseFloat(x2)})));
-                bw.newLine();
-                ++n;
-                if (n == 10) {
+                if (n % 10 == 0 && i !=0) {
                     n = 0;
+                    String x1 = (d + 1) + "." + n;
+                    String x2 = n + "." + (d+1);
+                    bw.write(x1 + " "+ x2 + " " + format.format(function.apply(new Float[] {Float.parseFloat(x1), Float.parseFloat(x2)})));
+                    bw.newLine();
                 }
-
+                else {
+                    String x1 = d + "." + n;
+                    String x2 = n + "." + d;
+                    bw.write(x1 +  " "+ x2 + " " + format.format(function.apply(new Float[] {Float.parseFloat(x1), Float.parseFloat(x2)})));
+                    bw.newLine();
+                }
+                ++n;
                 if (i % 10 == 0 && i != 0) {
                     ++d;
                 }
@@ -149,6 +164,9 @@ public class FileGenerator {
         fileGenerator.generate2vars("6_2.dat", 2, 0, 100, 100, FileGenerator::f_x_2_y_3);
         fileGenerator.generate2vars("6_3.dat", 2, -1, 1, 100, FileGenerator::f_x_2_y_3);
         fileGenerator.generate2vars("6_4.dat", 2, -1000, 1000, 100, FileGenerator::f_x_2_y_3);
+
+        fileGenerator.generate("tan.dat", 1, 0, (float)(Math.PI/2 - Float.MIN_VALUE), 100, FileGenerator::tan);
+        fileGenerator.generate("sin.dat", 1, -1, 1, 100, FileGenerator::sin_x_2);
 
     }
 }

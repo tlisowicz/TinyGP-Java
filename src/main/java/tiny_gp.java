@@ -442,7 +442,7 @@ public class tiny_gp {
         excelExporter.addSheet();
         excelExporter.putDATColumns();
         excelExporter.putSolution(result);
-        excelExporter.exportToFile( String.format("results_%s.xlsx", fname.split("/")[1]));
+        excelExporter.exportToFile( String.format("results_with_tryg_%s.xlsx", fname.split("/")[1]));
 
     }
 };
